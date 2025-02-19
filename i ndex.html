@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP8266 Car Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1e1e1e;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            justify-items: center;
+            margin-top: 30px;
+        }
+        button {
+            background-color: #ff9800;
+            border: none;
+            padding: 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+        button:active {
+            background-color: #e68900;
+        }
+        input, #speedControl {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-align: center;
+            border-radius: 5px;
+            border: none;
+        }
+        .speed-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ESP8266 Car Controller</h2>
+        <input type="text" id="ipAddress" placeholder="Enter ESP8266 IP Address" />
+        <div class="speed-container">
+            <label for="speedControl">Speed:</label>
+            <input type="range" id="speedControl" min="0" max="255" value="128" oninput="updateSpeed(this.value)"/>
+            <span id="speedValue">128</span>
+        </div>
+        <div class="controls">
+            <div></div>
+            <button onclick="sendCommand('forward')">⬆️</button>
+            <div></div>
+            <button onclick="sendCommand('left')">⬅️</button>
+            <button onclick="sendCommand('stop')" style="background-color: red;">⏹️</button>
+            <button onclick="sendCommand('right')">➡️</button>
+            <div></div>
+            <button onclick="sendCommand('backward')">⬇️</button>
+            <div></div>
+        </div>
+    </div>
+    <script>
+        let speed = 128;
+
+        function updateSpeed(value) {
+            speed = value;
+            document.getElementById("speedValue").textContent = value;
+        }
+
+        function sendCommand(command) {
+            const ip = document.getElementById("ipAddress").value;
+            if (!ip) {
+                alert("Please enter the ESP8266 IP address");
+                return;
+            }
+            fetch(`http://${ip}/${command}?speed=${speed}`)
+                .then(response => console.log("Command sent: " + command + " with speed " + speed))
+                .catch(error => console.error("Error: " + error));
+        }
+    </script>
+</body>
+</html>
